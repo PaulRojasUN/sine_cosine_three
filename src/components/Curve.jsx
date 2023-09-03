@@ -1,30 +1,44 @@
+import {Text} from "@react-three/drei";
+import { useRef} from 'react';
 import { useFrame } from "@react-three/fiber"
-import { useRef } from 'react';
+//import CoorNums from "./CoorNums";
 
-const Curve = ({f, min_x, max_x, stride}) => {
+const curve_f = (f, ref, min_x, max_x, delta) => {
+    if (ref.current.position.x >= max_x) {
+        ref.current.position.x = min_x - 5;
+        ref.current.position.y = 0;
+    } else {
+        ref.current.position.x += delta;
+        ref.current.position.y = f(ref.current.position.x );
+    }
+}
 
-    const curveRef = useRef();
+const Curve = ({init_x, f, f_name_raw}) => {
 
-    useFrame(() => {
-        if (curveRef.current.position.x >= max_x) {
-            curveRef.current.position.x = min_x;
-        } else {
-            curveRef.current.position.y += f(curveRef.current.position.x);
-            curveRef.current.position.x += stride;
-        }
+    const curve = useRef();
+
+    useFrame((state, delta) => {
+        curve_f(f, curve  , init_x, init_x + 5, delta);
     });
 
-    return <>
-    <gridHelper 
-        args={[6*Math.PI, 6*Math.PI, 0xff0000, 'teal']} 
-        rotation={[Math.PI*0.5, 0, 0]}
-        position={[min_x + Math.PI*3, 0, 0]}
-    />
-    <mesh ref={curveRef} position={[min_x, 0, 0]}>
-        <boxGeometry args={[1, 1, 1]}/>
-        <meshStandardMaterial color="yellow" />
-    </mesh> 
-    </>
-}
+
+
+    return  <>
+            <gridHelper
+                args={[10]}
+                rotation={[Math.PI*0.5, 0, 0]}
+                position={[init_x, 0, 0]}
+            />
+
+            <mesh ref={curve} position={[init_x - 5, 0, 0]}>
+                <boxGeometry args={[0.5, 0.5, 0.5]} />
+                <meshNormalMaterial color={'blue '} />
+            </mesh>
+
+            <Text position={[init_x, 6, 0]}>{f_name_raw}</Text>
+            {/*<CoorNums init_x={init_x - 5}/>*/}
+        </>
+
+};
 
 export default Curve;

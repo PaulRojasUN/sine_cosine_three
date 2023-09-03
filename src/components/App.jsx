@@ -4,7 +4,7 @@ import Experience from './Experience';
 const App = () => {
     return <>
         <Canvas
-            camera={{position:[0, 1, 30]}}
+            camera={{position:[0, 0, 10]}}
         >
             <Experience/>
         </Canvas>
